@@ -1,0 +1,658 @@
+@media print {
+
+    // ===== HIDE UNWANTED ELEMENTS =====
+    .td-navbar,
+    .td-sidebar,
+    .td-sidebar-toc,
+    .td-toc,
+    .td-footer,
+    .td-page-meta,
+    .edit-page,
+    .feedback,
+    .td-search-box,
+    .td-breadcrumbs,
+    .td-page-nav,
+    .github-link,
+    .print-hide,
+    header,
+    footer,
+    nav,
+    button,
+    .btn,
+    .d-print-none,
+    .navbar,
+    .sidebar,
+    #sidebar-nav,
+    #resizeable,
+    [class*="inkeep"],
+    [class*="ask"],
+    [id*="ask"],
+    [id*="chat"],
+    .chat,
+    .ai-chat,
+    .widget,
+    .share-buttons,
+    .social-links,
+    .back-to-top,
+    .version-banner,
+    .td-breadcrumbs {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    // ===== BASE PRINT SETUP =====
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        box-sizing: border-box !important;
+    }
+
+    html {
+        font-size: 12pt !important;
+    }
+
+    body {
+        font-family: "Inter", "Roboto", "Segoe UI", "Helvetica Neue", "Arial", sans-serif !important;
+        font-size: 11pt !important;
+        line-height: 1.5 !important;
+        color: #1a1a1a !important;
+        background: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    // ===== LAYOUT RESET FOR BOOTSTRAP GRID =====
+    .container-fluid {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    .td-outer {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    .td-main {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .row {
+        margin: 0 !important;
+        width: 100% !important;
+        --bs-gutter-x: 0 !important;
+        --bs-gutter-y: 0 !important;
+    }
+
+    // Force main content to take full width
+    #main-content,
+    main {
+        width: 100% !important;
+        max-width: none !important;
+        padding: 40px !important;
+        margin: 0 !important;
+        flex: none !important;
+        // Override all Bootstrap column classes
+        --bs-columns: 12 !important;
+    }
+
+    // Override all Bootstrap column responsive classes for main content
+    main.col-12,
+    main.col-md-9,
+    main.col-xl-8,
+    #main-content.col-12,
+    #main-content.col-md-9,
+    #main-content.col-xl-8 {
+        width: 100% !important;
+        max-width: none !important;
+        flex: none !important;
+        padding: 40px !important;
+        margin: 0 !important;
+    }
+
+    // Remove Bootstrap padding classes
+    .ps-md-5 {
+        padding-left: 0 !important;
+    }
+
+    // ===== TITLE PAGE STYLING =====
+    // ONLY the main title H1 gets the title box styling
+    .td-content h1.title,
+    #main-content h1.title,
+    main h1.title {
+        font-family: "Inter", "Roboto", "Segoe UI", sans-serif !important;
+        font-size: 36pt !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        margin: 20vh auto 30pt auto !important;
+        padding: 40pt 30pt !important;
+        color: #1a1a1a !important;
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%) !important;
+        border: 3pt solid #065A5B !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 32px rgba(6, 90, 91, 0.15) !important;
+        page-break-after: avoid !important;
+        page-break-before: auto !important;
+        width: 75% !important;
+        line-height: 1.1 !important;
+        counter-reset: none !important;
+
+        &::before {
+            content: "" !important; // Remove numbering from title
+        }
+
+        // NO ::after content for title
+        &::after {
+            content: "" !important;
+            display: none !important;
+        }
+    }
+
+    // ===== COUNTER SETUP FOR PROPER NUMBERING =====
+    .td-content,
+    #main-content,
+    main {
+        counter-reset: section 0;
+    }
+
+    // ===== HEADING STYLES & PROPER NUMBERING =====
+    h1:not(:first-child),
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: "Inter", "Roboto", "Segoe UI", sans-serif !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+        margin-top: 32pt !important;
+        margin-bottom: 16pt !important;
+        color: #1a1a1a !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+    }
+
+    // H1 - Major sections (1, 2, 3...) - only if not the first heading
+    h1:not(:first-child) {
+        font-size: 24pt !important;
+        page-break-before: always !important;
+        border-bottom: 3pt solid #065A5B !important;
+        padding-bottom: 12pt !important;
+        margin-bottom: 24pt !important;
+        color: #065A5B !important;
+
+        // NO title box styling for non-first H1s
+        background: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        text-align: left !important;
+        width: auto !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        padding-top: 0 !important;
+
+        &::before {
+            content: "" !important; // No numbering
+        }
+
+        &::after {
+            content: "" !important;
+            display: none !important;
+        }
+    }
+
+    // H2 - Regular headings, NO title box styling
+    h2 {
+        font-size: 20pt !important;
+        border-bottom: 2pt solid #065A5B !important;
+        padding-bottom: 8pt !important;
+        margin-bottom: 18pt !important;
+        color: #065A5B !important;
+
+        // Explicitly prevent title box styling
+        background: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        text-align: left !important;
+        width: auto !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        padding-top: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-top: none !important;
+
+        &::before {
+            content: "" !important; // No numbering
+        }
+
+        &::after {
+            content: "" !important;
+            display: none !important;
+        }
+    }
+
+    // H3 - Sub-subsections
+    h3 {
+        font-size: 16pt !important;
+        color: #065A5B !important;
+        border-left: 4pt solid #065A5B !important;
+        padding-left: 12pt !important;
+
+        &::before {
+            content: "" !important; // No numbering
+        }
+    }
+
+    // H4, H5, H6 - No numbering, just styling
+    h4 {
+        font-size: 14pt !important;
+        color: #065A5B !important;
+        font-weight: 600 !important;
+        margin-top: 20pt !important;
+    }
+
+    h5,
+    h6 {
+        font-size: 12pt !important;
+        color: #065A5B !important;
+        font-weight: 600 !important;
+        margin-top: 16pt !important;
+    }
+
+    // ===== TEXT FORMATTING =====
+    p {
+        margin: 12pt 0 !important;
+        text-align: justify !important;
+        orphans: 3 !important;
+        widows: 3 !important;
+        line-height: 1.6 !important;
+        font-size: 11pt !important;
+        color: #2a2a2a !important;
+    }
+
+    // Lists with better styling
+    ul,
+    ol {
+        margin: 12pt 0 !important;
+        padding-left: 20pt !important;
+    }
+
+    li {
+        margin: 8pt 0 !important;
+        page-break-inside: avoid !important;
+        line-height: 1.5 !important;
+        color: #2a2a2a !important;
+    }
+
+    // ===== LINKS =====
+    a {
+        color: #0066cc !important;
+        text-decoration: underline !important;
+    }
+
+    // Transform URLs in CSS for print
+    a[href*="localhost:1313"],
+    a[href*="docs.api.staging.endorlabs.com"] {
+        position: relative !important;
+    }
+
+    a[href*="localhost:1313"]::after,
+    a[href*="docs.api.staging.endorlabs.com"]::after {
+        content: " [Link: https://docs.endorlabs.com" attr(href) "]" !important;
+        font-size: 8pt !important;
+        color: #666 !important;
+        font-style: italic !important;
+        word-break: break-all !important;
+        position: absolute !important;
+        white-space: nowrap !important;
+    }
+
+    // For protocol-relative URLs
+    a[href^="//"]::after {
+        content: " [Link: https://docs.endorlabs.com" attr(href) "]" !important;
+        font-size: 8pt !important;
+        color: #666 !important;
+        font-style: italic !important;
+        word-break: break-all !important;
+    }
+
+    // For relative paths, prepend docs.endorlabs.com
+    a[href^="/"]::after {
+        content: " [Link: https://docs.endorlabs.com" attr(href) "]" !important;
+        font-size: 8pt !important;
+        color: #666 !important;
+        font-style: italic !important;
+        word-break: break-all !important;
+    }
+
+    // Show URLs for external links (but not endorlabs.com)
+    a[href^="http"]:not([href*="endorlabs.com"]):not([href*="localhost"]):not([href*="docs.api.staging.endorlabs.com"])::after {
+        content: " [" attr(href) "]" !important;
+        font-size: 8pt !important;
+        color: #666 !important;
+        font-style: italic !important;
+        word-break: break-all !important;
+    }
+
+    // Don't show URLs for anchor links (internal page navigation) and endorlabs.com links
+    a[href^="#"]::after,
+    a[href*="endorlabs.com"]::after {
+        content: "" !important;
+    }
+
+    // ===== CODE FORMATTING =====
+    code {
+        background: #f1f5f9 !important;
+        padding: 3pt 6pt !important;
+        font-family: "JetBrains Mono", "SF Mono", "Monaco", "Inconsolata", "Fira Code", "Consolas", monospace !important;
+        font-size: 9pt !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 4px !important;
+        color: #1e293b !important;
+    }
+
+    pre {
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-left: 4px solid #065A5B !important;
+        padding: 16pt !important;
+        margin: 16pt 0 !important;
+        font-family: "JetBrains Mono", "SF Mono", "Monaco", "Inconsolata", "Fira Code", "Consolas", monospace !important;
+        font-size: 9pt !important;
+        line-height: 1.4 !important;
+        page-break-inside: avoid !important;
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        overflow: visible !important;
+        border-radius: 6px !important;
+        min-height: auto !important;
+    }
+
+    // Hide empty pre elements that cause white boxes
+    pre:empty {
+        display: none !important;
+    }
+
+    // Style pre elements that only contain whitespace
+    pre:not(:has(code)):not(:has(span)):not(:has(div)) {
+        min-height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        background: none !important;
+        display: none !important;
+    }
+
+    pre code {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        color: #1e293b !important;
+        font-size: inherit !important;
+    }
+
+    // Force expand code blocks and hide empty containers
+    details.code-expander summary {
+        display: none !important;
+    }
+
+    details.code-expander[open] pre,
+    details.code-expander pre {
+        display: block !important;
+        margin-top: 0 !important;
+    }
+
+    // Hide any empty code containers
+    .highlight:empty,
+    .highlight pre:empty,
+    .codehilite:empty,
+    .codehilite pre:empty {
+        display: none !important;
+    }
+
+    // Ensure proper spacing for code blocks that do have content
+    .highlight,
+    .codehilite {
+        margin: 16pt 0 !important;
+    }
+
+    .highlight pre,
+    .codehilite pre {
+        margin: 0 !important;
+    }
+
+    // Fix for syntax highlighting containers
+    .highlight,
+    .codehilite,
+    .chroma {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 16pt 0 !important;
+    }
+
+    .highlight pre,
+    .codehilite pre,
+    .chroma pre {
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-left: 4px solid #065A5B !important;
+        padding: 16pt !important;
+        margin: 0 !important;
+        border-radius: 6px !important;
+    }
+
+    // ===== ENHANCED ALERT BOXES =====
+    .alert {
+        border-radius: 6px !important;
+        padding: 12pt !important;
+        margin: 16pt 0 !important;
+        page-break-inside: avoid !important;
+        font-size: 10pt !important;
+        line-height: 1.5 !important;
+        position: relative !important;
+        border: 1px solid !important;
+    }
+
+    // Remove the injected header content
+    .alert::before {
+        display: none !important;
+    }
+
+    // Style the actual heading to match text color and be compact
+    .alert h1,
+    .alert h2,
+    .alert h3,
+    .alert h4,
+    .alert h5,
+    .alert h6 {
+        margin: 0 0 8pt 0 !important;
+        padding: 0 !important;
+        font-size: 10pt !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        border: none !important;
+        color: inherit !important;
+    }
+
+    // Important/Warning alerts - light yellow background
+    .alert-warning {
+        background: #fefce8 !important;
+        border-color: #eab308 !important;
+        color: #1a1a1a !important;
+    }
+
+    // Note alerts - light green background
+    .alert-info {
+        background: #f0fdf4 !important;
+        border-color: #22c55e !important;
+        color: #1a1a1a !important;
+    }
+
+    // Warning/Danger alerts - light red background
+    .alert-danger {
+        background: #fef2f2 !important;
+        border-color: #ef4444 !important;
+        color: #1a1a1a !important;
+    }
+
+    // Success/Tip alerts - keep light green
+    .alert-success {
+        background: #f0fdf4 !important;
+        border-color: #22c55e !important;
+        color: #1a1a1a !important;
+    }
+
+    // ===== TABLES =====
+    table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+        margin: 20pt 0 !important;
+        page-break-inside: avoid !important;
+        font-size: 9pt !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 6px !important;
+        overflow: hidden !important;
+    }
+
+    th,
+    td {
+        border: 1px solid #cbd5e1 !important;
+        padding: 10pt !important;
+        text-align: left !important;
+        vertical-align: top !important;
+        line-height: 1.4 !important;
+    }
+
+    th {
+        background: #f1f5f9 !important;
+        font-weight: 700 !important;
+        color: #1e293b !important;
+        font-size: 9pt !important;
+        border-bottom: 2px solid #cbd5e1 !important;
+    }
+
+    tr:nth-child(even) td {
+        background: #f8fafc !important;
+    }
+
+    // ===== IMAGES =====
+    img {
+        max-width: 100% !important;
+        height: auto !important;
+        page-break-inside: avoid !important;
+        display: block !important;
+        margin: 20pt auto !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 6px !important;
+    }
+
+    // ===== BLOCKQUOTES =====
+    blockquote {
+        margin: 20pt 25pt !important;
+        padding: 16pt 20pt !important;
+        border-left: 6px solid #065A5B !important;
+        background: #f0f9ff !important;
+        font-style: italic !important;
+        page-break-inside: avoid !important;
+        font-size: 10pt !important;
+        border-radius: 0 6px 6px 0 !important;
+    }
+
+    // ===== ENDOR LABS SPECIFIC COMPONENTS =====
+    .badge {
+        background: #f1f5f9 !important;
+        color: #1e293b !important;
+        border: 2px solid #cbd5e1 !important;
+        padding: 4pt 8pt !important;
+        font-size: 8pt !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+
+    .badge-new {
+        background: #dcfce7 !important;
+        border-color: #065A5B !important;
+        color: #166534 !important;
+    }
+
+    .badge-enhancement {
+        background: #e0f2fe !important;
+        border-color: #065A5B !important;
+        color: #0c4a6e !important;
+    }
+
+    .badge-breaking {
+        background: #fee2e2 !important;
+        border-color: #ea606e !important;
+        color: #991b1b !important;
+    }
+
+    .badge-beta {
+        background: #ede9fe !important;
+        border-color: #8187ee !important;
+        color: #5b21b6 !important;
+    }
+
+    // ===== UTILITY CLASSES =====
+    .page-break {
+        page-break-before: always !important;
+    }
+
+    .no-page-break {
+        page-break-inside: avoid !important;
+    }
+
+    // ===== FORCE VISIBILITY FOR PRINT =====
+    .d-print-block {
+        display: block !important;
+    }
+
+    .d-print-inline {
+        display: inline !important;
+    }
+
+    .d-print-inline-block {
+        display: inline-block !important;
+    }
+}
+
+// ===== PAGE SETUP =====
+@page {
+    size: A4;
+    margin: 2.5cm 2cm;
+
+    @top-center {
+        content: "Endor Labs Documentation";
+        font-family: "Inter", "Roboto", "Segoe UI", sans-serif;
+        font-size: 9pt;
+        color: #065A5B;
+        font-weight: 600;
+        border-bottom: 1pt solid #065A5B;
+        padding-bottom: 5pt;
+        margin-bottom: 10pt;
+    }
+
+    @bottom-center {
+        content: "Page " counter(page);
+        font-family: "Inter", "Roboto", "Segoe UI", sans-serif;
+        font-size: 9pt;
+        color: #666;
+        border-top: 1pt solid #e2e8f0;
+        padding-top: 5pt;
+        margin-top: 10pt;
+    }
+}

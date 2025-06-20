@@ -1,0 +1,162 @@
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@rules_python//python:defs.bzl", "py_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+_SRCS = glob(
+    include = [
+        "**/*",
+    ],
+    exclude = [
+        "bin/**/*",
+        "node_modules/**/*",
+    ],
+)
+
+filegroup(
+    name = "redoc-script",
+    srcs = glob([
+        "bin/*.sh",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "srcs",
+    srcs = _SRCS,
+    visibility = ["//visibility:__pkg__"],
+)
+
+# gen rule to generate the documentation for 'GithubCommentData'.
+genrule(
+    name = "gen_github_pr_comment_data",
+    srcs = [
+        "//src/golang/internal.endor.ai/pkg/prcomments:templates.go",
+        "//spec/internal/endor/v1:github_pr_comment_data.proto",
+    ],
+    outs = [
+        "content/includes/github_pr_comment_data.proto",
+        "content/includes/github_pr_comment_func_map.txt",
+    ],
+    cmd = """
+    mkdir -p src/hugo/docsy/content/includes
+    pushd src/golang/internal.endor.ai/pkg/prcomments
+    touch github_pr_comment_func_map.txt
+    go doc -src FuncMap | awk '{if(NR>1)print}' >> github_pr_comment_func_map.txt
+	popd
+
+	cp spec/internal/endor/v1/github_pr_comment_data.proto $(location content/includes/github_pr_comment_data.proto)
+    cp src/golang/internal.endor.ai/pkg/prcomments/github_pr_comment_func_map.txt  $(location content/includes/github_pr_comment_func_map.txt)
+    """,
+)
+
+# gen rule to generate the documentation for 'NotificationData'.
+genrule(
+    name = "gen_notification_data",
+    srcs = [
+        "//src/golang/internal.endor.ai/pkg/notificationplugins/handlers/templates:notification_template_processor.go",
+        "//src/golang/internal.endor.ai/pkg/notificationplugins/handlers/templates:email_template_processor.go",
+        "//spec/internal/endor/v1:notification_data.proto",
+    ],
+    outs = [
+        "content/includes/notification_data.proto",
+        "content/includes/notification_func_map.txt",
+        "content/includes/email_notification_func_map.txt",
+        "content/includes/email_data.txt",
+        "content/includes/resolved_email_data.txt",
+    ],
+    cmd = """
+    mkdir -p src/hugo/docsy/content/includes
+    pushd src/golang/internal.endor.ai/pkg/notificationplugins/handlers/templates
+    touch notification_func_map.txt
+    touch email_notification_func_map.txt
+    touch email_data.txt
+    touch resolved_email_data.txt
+    go doc -src FuncMap | awk '{if(NR>1)print}' >> notification_func_map.txt
+    go doc -src EmailTemplateFuncs | awk '{if(NR>1)print}' >> email_notification_func_map.txt
+    go doc -src EmailData | awk '{if(NR>1)print}' >> email_data.txt
+    go doc -src ResolvedEmailData | awk '{if(NR>1)print}' >> resolved_email_data.txt
+	popd
+
+	cp spec/internal/endor/v1/notification_data.proto $(location content/includes/notification_data.proto)
+    cp src/golang/internal.endor.ai/pkg/notificationplugins/handlers/templates/notification_func_map.txt  $(location content/includes/notification_func_map.txt)
+    cp src/golang/internal.endor.ai/pkg/notificationplugins/handlers/templates/email_notification_func_map.txt  $(location content/includes/email_notification_func_map.txt)
+    cp src/golang/internal.endor.ai/pkg/notificationplugins/handlers/templates/email_data.txt  $(location content/includes/email_data.txt)
+    cp src/golang/internal.endor.ai/pkg/notificationplugins/handlers/templates/resolved_email_data.txt  $(location content/includes/resolved_email_data.txt)
+    """,
+)
+
+py_binary(
+    name = "remove_internal_tags",
+    srcs = ["remove_internal_tags.py"],
+    main = "remove_internal_tags.py",
+    visibility = ["//visibility:public"],
+)
+
+# gen rule to process OpenAPI files
+genrule(
+    name = "process_openapi",
+    srcs = [
+        "//spec/internal/openapi:swagger-files",
+    ],
+    outs = ["openapiv2.swagger.json"],
+    cmd = """
+    mkdir -p $(@D)
+    for file in $(locations //spec/internal/openapi:swagger-files); do
+        $(location :remove_internal_tags) -i $$file -o $(@D)/openapiv2.swagger.json
+    done
+    """,
+    tools = [":remove_internal_tags"],
+)
+
+# gen rule build the site.
+genrule(
+    name = "build",
+    srcs = [
+        ":process_openapi",
+        ":gen_github_pr_comment_data",
+        ":gen_notification_data",
+        ":srcs",
+        ":redoc-script",
+    ],
+    outs = ["docs.endorlabs.com"],
+    cmd = """
+    mkdir -p src/hugo/docsy/content/includes
+    cp $(locations :gen_github_pr_comment_data) src/hugo/docsy/content/includes
+    cp $(locations :gen_notification_data) src/hugo/docsy/content/includes
+    cp $(locations :process_openapi) src/hugo/docsy/content/includes/openapiv2.swagger.json
+    export NODE_BINARY=$(location @nodejs//:node)
+    export NPX_BINARY=$(location @nodejs//:npx_bin)
+    export YARN_BINARY=$(location @yarn//:yarn)
+    src/hugo/docsy/bin/hugo.sh build $(OUTS)
+    """,
+    tools = [
+        "@go_sdk//:bin/go",
+        "@nodejs//:node",
+        "@nodejs//:npx_bin",
+        "@yarn",
+    ],
+)
+
+# go image includes our webserver and the hugo files.
+go_image(
+    name = "hugo_image",
+    data = [":build"],
+    embed = [
+        "//src/golang/internal.endor.ai/infra/webserver:webserver_lib",
+    ],
+    goarch = "amd64",
+    goos = "linux",
+    pure = "on",
+    visibility = ["//visibility:public"],
+)
+
+container_push(
+    name = "hugo_push",
+    format = "Docker",
+    image = ":hugo_image",
+    registry = "us-central1-docker.pkg.dev" if "$(REGISTRY)" == "" else "$(REGISTRY)",
+    repository = "$(REPOSITORY)/hugo",
+    tag = "dev" if "$(TAG)" == "" else "$(TAG)",
+)

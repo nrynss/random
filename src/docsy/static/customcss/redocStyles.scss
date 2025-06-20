@@ -1,0 +1,153 @@
+//
+// Main navbar
+//
+
+.td-navbar-cover {
+    @include media-breakpoint-up(md) {
+        background: transparent !important;
+
+        .nav-link {
+            text-shadow: 1px 1px 2px $dark;
+        }
+    }
+
+    &.navbar-bg-onscroll .nav-link {
+        text-shadow: none;
+    }
+}
+
+.navbar-bg-onscroll {
+    background: #005652;
+    opacity: inherit;
+}
+
+.td-navbar {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    background: #005652;
+    min-height: 4rem;
+    margin: 0;
+    z-index: 32;
+    padding: 0.5rem;
+
+    .container-fluid {
+        display: flex;
+        flex-wrap: inherit;
+        align-items: center;
+        justify-content: space-between;
+
+        .navbar-brand {
+            text-transform: none;
+            font-weight: 700;
+
+            .navbar-logo {
+                display: inline-block;
+                margin: 0 0.5rem 0 0;
+                height: 30px;
+            }
+        }
+    }
+
+    .navbar-nav {
+        padding-top: 0.5rem;
+        white-space: nowrap;
+        flex-direction: row;
+    }
+
+    .nav-item {
+        padding-inline-end: 1rem;
+
+        .nav-link {
+            text-transform: none;
+            font-weight: 700;
+
+            .active {
+                color: #fff;
+            }
+        }
+    }
+
+    @include media-breakpoint-up(md) {
+        position: fixed;
+        top: 0;
+        width: 100%;
+
+        .nav-item {
+            padding-inline-end: $spacer * 0.5;
+        }
+
+        .navbar-nav {
+            padding-top: 0 !important;
+        }
+    }
+
+    @include media-breakpoint-down(lg) {
+        .td-navbar-nav-scroll {
+            max-width: 100%;
+            height: 2.5rem;
+            overflow: hidden;
+            font-size: 0.9rem;
+        }
+
+        .navbar-brand {
+            margin-right: 0;
+        }
+
+        .navbar-nav {
+            padding-bottom: 2rem;
+            overflow-x: auto;
+        }
+    }
+}
+
+.navbar-brand {
+    padding-top: 0.3125rem;
+    padding-bottom: 0.3125rem;
+    margin-right: 1rem;
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255);
+    white-space: nowrap;
+}
+
+.navbar-nav {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+    --bs-nav-link-color: rgba(255, 255, 255, 0.75);
+    --bs-nav-link-hover-color: rgba(255, 255, 255);
+    --bs-navbar-active-color: rgba(255, 255, 255);
+}
+
+// Icons
+#main_navbar {
+    li i {
+        padding-right: 0.5em;
+
+        &:before {
+            display: inline-block;
+            text-align: center;
+            min-width: 1em;
+        }
+    }
+}
+
+@media (min-width: 768px) {
+    .td-navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+    }
+
+    .ms-md-auto {
+        margin-left: auto !important;
+    }
+}
+
+.redoc-container {
+    width: 100%;
+    margin-top: 4rem;
+    height: calc(100vh - 4rem);
+    overflow: auto;
+}

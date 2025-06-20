@@ -1,0 +1,13 @@
+{{/*
+    This shortcode renders a reusable YAML table from a predefined file in src/hugo/docsy/layouts/shortcodes/reusables.
+    Usage: {{% yamletablereuse "yamlfile" %}}
+ */}}
+
+ {{ $tableName := .Get 0 }}
+ {{ $tablePath := printf "data/reusables/%s.yaml" $tableName }}
+ {{ if fileExists $tablePath }}
+   {{ $tableContent := readFile $tablePath }}
+   {{ partial "yaml-table.html" $tableContent }}
+ {{ else }}
+   {{ errorf "Reusable table '%s' not found at %s" $tableName $tablePath }}
+ {{ end }}

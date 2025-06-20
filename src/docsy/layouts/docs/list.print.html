@@ -1,0 +1,459 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="{{ .Site.Language.Lang }}" class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="generator" content="Hugo {{ hugo.Version }}">
+
+    <!-- Set correct canonical URL for print pages -->
+    <link rel="canonical" type="text/html" href="{{ .Permalink }}">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Include favicons and meta -->
+    {{ partial "favicons.html" . }}
+
+    <title>{{ .Title }} | {{ .Site.Title }}</title>
+    <meta name="description" content="{{ .Params.description | default .Summary }}">
+
+    <!-- Load your compiled CSS -->
+    {{ $styles := resources.Get "scss/main.scss" | css.Sass | resources.Minify }}
+    <link href="{{ $styles.RelPermalink }}" rel="stylesheet">
+
+    <!-- FIXED: Set base URL to the regular section URL without _print -->
+    {{ $baseURL := .RelPermalink | strings.TrimSuffix "_print/" }}
+    {{ if not $baseURL }}{{ $baseURL = "/" }}{{ end }}
+    <base href="{{ $baseURL }}">
+
+    <!-- Your existing SCSS styles are loaded via main.css -->
+
+    <style>
+        /* Minimal template styles - let your SCSS handle most styling */
+        @media print {
+            /* Ensure page breaks work correctly */
+            .page-break {
+                page-break-before: always !important;
+            }
+
+            /* Override SCSS to prevent TOC heading from getting title box styling */
+            h2 {
+                background: none !important;
+                border: 2pt solid #065A5B !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                padding: 0 0 8pt 0 !important;
+                margin: 40pt 0 20pt 0 !important;
+                text-align: left !important;
+                width: auto !important;
+                font-size: 20pt !important;
+                border-left: none !important;
+                border-right: none !important;
+                border-top: none !important;
+                border-bottom: 2pt solid #065A5B !important;
+            }
+
+            /* Remove the ::after content from h2 */
+            h2::after {
+                content: "" !important;
+                display: none !important;
+            }
+
+            /* Style the TOC list */
+            .toc-list {
+                list-style-type: none !important;
+                padding-left: 0 !important;
+                margin: 20pt 0 !important;
+                font-size: 12pt !important;
+                line-height: 1.8 !important;
+            }
+
+            .toc-sublist {
+                list-style-type: none !important;
+                padding-left: 30pt !important;
+                margin: 8pt 0 16pt 0 !important;
+            }
+
+            .toc-list > li {
+                margin: 12pt 0 !important;
+                page-break-inside: avoid !important;
+            }
+
+            .toc-sublist > li {
+                margin: 6pt 0 !important;
+                page-break-inside: avoid !important;
+            }
+
+            .toc-number {
+                font-weight: 600 !important;
+                color: #065A5B !important;
+                margin-right: 8pt !important;
+            }
+
+            .toc-list a,
+            .toc-sublist a {
+                color: #0066cc !important;
+                text-decoration: none !important;
+            }
+
+            .toc-list a:hover,
+            .toc-sublist a:hover {
+                text-decoration: underline !important;
+            }
+        }
+
+        /* Screen preview styles */
+        @media screen {
+            .toc-list {
+                list-style-type: none;
+                padding-left: 0;
+                margin: 1rem 0;
+            }
+
+            .toc-sublist {
+                list-style-type: none;
+                padding-left: 2rem;
+                margin: 0.5rem 0 1rem 0;
+            }
+
+            .toc-list > li {
+                margin: 0.75rem 0;
+            }
+
+            .toc-sublist > li {
+                margin: 0.5rem 0;
+            }
+
+            .toc-number {
+                font-weight: 600;
+                color: #065A5B;
+                margin-right: 0.5rem;
+            }
+
+            .toc-list a,
+            .toc-sublist a {
+                color: #0066cc;
+                text-decoration: none;
+            }
+
+            .toc-list a:hover,
+            .toc-sublist a:hover {
+                text-decoration: underline;
+            }
+        }
+    </style>
+</head>
+
+<body class="td-section print-layout">
+    <div class="container-fluid td-outer">
+        <div class="td-main">
+            <div class="row flex-xl-nowrap">
+                <main class="col-12" role="main">
+                    <div class="td-content">
+                        <!-- Print info box (hidden in actual print) -->
+                        <div class="pageinfo pageinfo-primary d-print-none">
+                            <p>This is the multi-page printable view of this section.
+                            <a href="#" onclick="print();return false;">Click here to print</a>.</p>
+                            <p><a href="{{ .RelPermalink }}">Return to the regular view of this page</a>.</p>
+                        </div>
+
+                        <!-- Main section title -->
+                        <h1 class="title">{{ .Title }}</h1>
+
+                        <!-- Section description -->
+                        {{ with .Params.description }}
+                        <div class="lead">{{ . }}</div>
+                        {{ end }}
+
+                        <!-- Table of contents with proper anchor links -->
+                        {{ if .Pages }}
+                        <div class="print-toc">
+                            <h2>Table of Contents</h2>
+                            <ul>
+                            <!-- Add main section link -->
+                            <li><a href="#page-{{ .Section }}">{{ .Title }} (Overview)</a></li>
+                            {{ range $index, $page := .Pages }}
+                                {{ $pageSlug := "" }}
+                                {{ if $page.File }}
+                                    {{ $dir := path.Dir $page.File.Path }}
+                                    {{ $pageSlug = path.Base $dir }}
+                                {{ else }}
+                                    {{ $pageSlug = $page.Title | urlize }}
+                                {{ end }}
+                                <li>{{ add $index 1 }}: <a href="#page-{{ $pageSlug }}">{{ $page.Title }}</a>
+                                    <!-- Include sub-pages -->
+                                    {{ if $page.Pages }}
+                                    <ul>
+                                        {{ range $subIndex, $subPage := $page.Pages }}
+                                            {{ $subPageSlug := "" }}
+                                            {{ if $subPage.File }}
+                                                {{ $subDir := path.Dir $subPage.File.Path }}
+                                                {{ $subPageSlug = path.Base $subDir }}
+                                                {{ if eq $subPageSlug $pageSlug }}
+                                                    {{ $subPageSlug = printf "%s-%s" $pageSlug ($subPage.Title | urlize) }}
+                                                {{ end }}
+                                            {{ else }}
+                                                {{ $subPageSlug = printf "%s-%s" $pageSlug ($subPage.Title | urlize) }}
+                                            {{ end }}
+                                            <li>{{ add $index 1 }}.{{ add $subIndex 1 }}: <a href="#page-{{ $subPageSlug }}">{{ $subPage.Title }}</a></li>
+                                        {{ end }}
+                                    </ul>
+                                    {{ end }}
+                                </li>
+                            {{ end }}
+                            </ul>
+                        </div>
+                        {{ end }}
+
+                        <!-- Print info box (hidden in actual print) -->
+                        <div class="pageinfo pageinfo-primary d-print-none">
+                            <p>This is the multi-page printable view of this section.
+                            <a href="#" onclick="print();return false;">Click here to print</a>.</p>
+                            <p><a href="{{ .RelPermalink }}">Return to the regular view of this page</a>.</p>
+                        </div>
+
+                        <!-- Main Content starts on new page -->
+                        <div class="content-start page-break" id="page-{{ .Section }}">
+                            <!-- Section description -->
+                            {{ with .Params.description }}
+                            <div class="section-description">{{ . }}</div>
+                            {{ end }}
+
+                            <!-- Section content -->
+                            <div class="content">
+                                {{ .Content }}
+                            </div>
+                        </div>
+
+                        <!-- Child pages with proper anchors -->
+                        {{ range $index, $page := .Pages }}
+                        {{ $pageSlug := "" }}
+                        {{ if $page.File }}
+                            {{ $dir := path.Dir $page.File.Path }}
+                            {{ $pageSlug = path.Base $dir }}
+                        {{ else }}
+                            {{ $pageSlug = $page.Title | urlize }}
+                        {{ end }}
+                        <div class="page-break" id="page-{{ $pageSlug }}" data-page-title="{{ $page.Title }}" data-page-path="{{ $page.File.Path }}">
+                            <h1>{{ $page.Title }}</h1>
+                            <div class="page-content">
+                                {{ $page.Content }}
+                            </div>
+                        </div>
+
+                        <!-- Include sub-pages -->
+                        {{ range $subIndex, $subPage := $page.Pages }}
+                            {{ $subPageSlug := "" }}
+                            {{ if $subPage.File }}
+                                {{ $subDir := path.Dir $subPage.File.Path }}
+                                {{ $subPageSlug = path.Base $subDir }}
+                                {{ if eq $subPageSlug $pageSlug }}
+                                    {{ $subPageSlug = printf "%s-%s" $pageSlug ($subPage.Title | urlize) }}
+                                {{ end }}
+                            {{ else }}
+                                {{ $subPageSlug = printf "%s-%s" $pageSlug ($subPage.Title | urlize) }}
+                            {{ end }}
+                            <div class="page-break" id="page-{{ $subPageSlug }}" data-page-title="{{ $subPage.Title }}" data-page-path="{{ $subPage.File.Path }}">
+                                <h2>{{ $subPage.Title }}</h2>
+                                <div class="page-content">
+                                    {{ $subPage.Content }}
+                                </div>
+                            </div>
+                        {{ end }}
+                        {{ end }}
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("🔧 Print template link processing started");
+
+            // Build map of available pages in this print document
+            const availablePages = new Map();
+            const pageElements = document.querySelectorAll('[id^="page-"]');
+
+            pageElements.forEach(page => {
+                const pageId = page.id.replace('page-', '');
+                const pageTitle = page.getAttribute('data-page-title') || '';
+                availablePages.set(pageId, pageTitle);
+                console.log(`📄 Available page: ${pageId} (${pageTitle})`);
+            });
+
+            // Helper function to extract potential page slug from URL
+            function extractPageSlug(url) {
+                try {
+                    // Handle absolute URLs
+                    if (url.startsWith('http')) {
+                        const urlObj = new URL(url);
+                        const pathParts = urlObj.pathname.split('/').filter(part =>
+                            part && part !== '_print' && part !== 'index.html'
+                        );
+                        return pathParts[pathParts.length - 1] || pathParts[pathParts.length - 2];
+                    }
+
+                    // Handle relative URLs like ../monitoring-scans/github-app/
+                    const pathParts = url.split('/').filter(part =>
+                        part && part !== '.' && part !== '..' && part !== '_print' &&
+                        part !== 'monitoring-scans' && part !== 'docs.api.staging.endorlabs.com'
+                    );
+
+                    // Get the last meaningful part
+                    const lastPart = pathParts[pathParts.length - 1];
+
+                    // If it's empty (trailing slash), get the second to last
+                    return lastPart || pathParts[pathParts.length - 2];
+                } catch (e) {
+                    console.warn(`Could not parse URL: ${url}`, e);
+                    return null;
+                }
+            }
+
+            // Helper function to check if URL is internal to this Hugo site
+            function isInternalLink(href) {
+                if (href.startsWith('#')) return false; // Already an anchor
+                if (href.startsWith('http') && !href.includes(window.location.hostname)) return false; // External
+                if (href.startsWith('mailto:') || href.startsWith('tel:')) return false; // Special protocols
+                return true;
+            }
+
+            // Helper function to fix malformed URLs
+            function fixMalformedURL(href) {
+                // Fix doubled path segments
+                const segments = href.split('/').filter(Boolean);
+                const deduped = [];
+                for (let i = 0; i < segments.length; i++) {
+                    if (i === 0 || segments[i] !== segments[i-1]) {
+                        deduped.push(segments[i]);
+                    }
+                }
+                return deduped.join('/');
+            }
+
+            // Process all links in the document
+            const allLinks = document.querySelectorAll('a[href]');
+            let processedCount = 0;
+            let convertedCount = 0;
+
+            console.log(`🔍 Processing ${allLinks.length} links...`);
+
+            allLinks.forEach((link, index) => {
+                const originalHref = link.getAttribute('href');
+                let href = originalHref;
+
+                // Skip if already processed or is an anchor
+                if (href.startsWith('#') && href.includes('page-')) {
+                    return;
+                }
+
+                // Fix malformed URLs first
+                if (href.includes('localhost') || href.includes('//')) {
+                    href = fixMalformedURL(href);
+                }
+
+                // Only process internal links
+                if (!isInternalLink(href)) {
+                    console.log(`🌐 External link (keeping): ${originalHref}`);
+                    return;
+                }
+
+                processedCount++;
+
+                // Extract potential page slug
+                const pageSlug = extractPageSlug(href);
+
+                // Check if this corresponds to a page in our document
+                if (pageSlug && availablePages.has(pageSlug)) {
+                    const newHref = `#page-${pageSlug}`;
+                    link.setAttribute('href', newHref);
+
+                    // Add visual indicator for converted links
+                    link.style.borderBottom = '1px dotted #007bff';
+                    link.title = `Internal link to: ${availablePages.get(pageSlug)}`;
+
+                    console.log(`✅ Converted: ${originalHref} → ${newHref}`);
+                    convertedCount++;
+                } else {
+                    // Try partial matching for similar page names
+                    let found = false;
+                    for (const [availableSlug, title] of availablePages) {
+                        if (pageSlug && (
+                            pageSlug.includes(availableSlug) ||
+                            availableSlug.includes(pageSlug) ||
+                            pageSlug.replace(/-/g, '_') === availableSlug ||
+                            pageSlug.replace(/_/g, '-') === availableSlug
+                        )) {
+                            const newHref = `#page-${availableSlug}`;
+                            link.setAttribute('href', newHref);
+                            link.style.borderBottom = '1px dotted #28a745';
+                            link.title = `Fuzzy match to: ${title}`;
+
+                            console.log(`🔀 Fuzzy match: ${originalHref} → ${newHref}`);
+                            convertedCount++;
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        // If it's an internal link (relative or localhost), rewrite to production docs URL
+                        if (isInternalLink(href)) {
+                            // Remove leading slashes for clean concatenation
+                            let cleanHref = href.replace(/^\//, '');
+                            // If the original link was absolute (e.g., http://localhost:1313/foo/bar), extract the path
+                            if (href.startsWith('http')) {
+                                try {
+                                    const urlObj = new URL(href);
+                                    cleanHref = urlObj.pathname.replace(/^\//, '');
+                                } catch (e) {
+                                    // fallback: keep as is
+                                }
+                            }
+                            const prodUrl = `https://docs.endorlabs.com/${cleanHref}`;
+                            link.setAttribute('href', prodUrl);
+                            link.style.color = '';
+                            link.style.textDecoration = '';
+                            link.title = `Link to docs.endorlabs.com: ${prodUrl}`;
+                            console.log(`🔗 Rewritten unresolved internal link: ${originalHref} → ${prodUrl}`);
+                        } else {
+                            link.style.color = '#dc3545';
+                            link.style.textDecoration = 'line-through';
+                            link.title = `Unresolved internal link: ${originalHref}`;
+                            console.log(`❌ Unresolved: ${originalHref} (extracted: ${pageSlug})`);
+                        }
+                    }
+                }
+            });
+
+            // Summary
+            console.log(`📊 Link processing complete:`);
+            console.log(`   Total links: ${allLinks.length}`);
+            console.log(`   Processed internal links: ${processedCount}`);
+            console.log(`   Successfully converted: ${convertedCount}`);
+            console.log(`   Available pages: ${availablePages.size}`);
+
+            // Add a summary note to the page (remove in production)
+            const debugSummary = document.createElement('div');
+            debugSummary.className = 'alert alert-info d-print-none';
+            debugSummary.style.cssText = 'background: #d1ecf1; border: 1px solid #bee5eb; padding: 10px; margin: 10px 0; border-radius: 4px; font-family: monospace; font-size: 12px;';
+            debugSummary.innerHTML = `
+                <strong>LINK PROCESSING SUMMARY:</strong><br>
+                Converted ${convertedCount} of ${processedCount} internal links to anchors<br>
+                Available pages: ${Array.from(availablePages.keys()).join(', ')}
+            `;
+            document.querySelector('.td-content').appendChild(debugSummary);
+        });
+
+        // Add smooth scrolling for anchor links
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A' && e.target.getAttribute('href').startsWith('#page-')) {
+                e.preventDefault();
+                const target = document.querySelector(e.target.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        });
+    </script>
+</body>
+</html>

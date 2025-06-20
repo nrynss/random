@@ -1,0 +1,9 @@
+{{/*
+    This shortcode renders the MCP server configuration parameters.
+    Usage: {{< reusables/mcp-params >}}
+*/}}
+
+{{ $content := readFile "data/reusables/mcp-params.md" }}
+<div class="mcp-params">
+    {{ $content | markdownify }}
+</div>

@@ -1,0 +1,19 @@
+{{ $icon := .Get "icon" | default "fa-lightbulb" -}}
+<div class="col-lg-4 mb-5 mb-lg-0 text-center {{ .Get "custom-feature-class" }}">
+<div class="mb-4 h1">
+        {{ if hasPrefix $icon "fe" }}
+            <img src="/feather/{{ $icon }}.svg" alt="{{ $icon }}">
+        {{ else if not (or (hasPrefix $icon "fas ") (hasPrefix $icon "fab ")) }}
+            <i class="fas {{ $icon }}"></i>
+        {{ else }}
+            <i class="{{ $icon }}"></i>
+        {{ end }}
+    </div>
+<h4 class="h3">
+  {{- .Get "title" | markdownify -}}
+</h4>
+<div class="mb-0">
+{{ .Inner }}
+</div>
+{{ with .Get "url" }}<p><a href="{{ . }}">{{ with $.Get "url_text" }}{{ . }}{{ else }}{{ T "ui_read_more" }}{{ end }}</a></p>{{ end }}
+</div>

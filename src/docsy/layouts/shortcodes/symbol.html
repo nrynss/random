@@ -1,0 +1,92 @@
+{{- /* layouts/shortcodes/symbol.html */ -}}
+{{- $type := .Get 0 | default "tick" -}}
+{{- $size := .Get 1 | default "1em" -}}
+{{- $customColor := .Get 2 | default "" -}}
+
+<span class="symbol-container symbol-{{ $type }}"
+    style='font-size: {{ $size }}{{ with $customColor }}; color: {{ . }}{{ end }}'>
+    {{- if eq $type "tick" -}}✓
+    {{- else if eq $type "cross" -}}✗
+    {{- else if eq $type "warning" -}}⚠
+    {{- else if eq $type "info" -}}ℹ
+    {{- else if eq $type "star" -}}★
+    {{- else if eq $type "gold-star" -}}★
+    {{- else if eq $type "silver-star" -}}★
+    {{- else if eq $type "bronze-star" -}}★
+    {{- else if eq $type "arrow-up" -}}↑
+    {{- else if eq $type "arrow-right" -}}→
+    {{- else if eq $type "arrow-down" -}}↓
+    {{- else if eq $type "arrow-left" -}}←
+    {{- else if eq $type "arrow-ne" -}}↗
+    {{- else if eq $type "arrow-se" -}}↘
+    {{- else if eq $type "arrow-sw" -}}↙
+    {{- else if eq $type "arrow-nw" -}}↖
+    {{- else if eq $type "lock" -}}🔒
+    {{- else if eq $type "search" -}}🔍
+    {{- else if eq $type "settings" -}}⚙
+    {{- end -}}
+</span>
+
+<style>
+    .symbol-container {
+        display: inline-block;
+        vertical-align: middle;
+        transition: transform 0.2s ease;
+    }
+
+    .symbol-container:hover {
+        transform: scale(1.1);
+    }
+
+    /* Default colors if no custom color provided */
+    .symbol-tick {
+        color: #22c55e;
+        /* Green */
+    }
+
+    .symbol-cross {
+        color: #ef4444;
+        /* Red */
+    }
+
+    .symbol-warning {
+        color: #f59e0b;
+        /* Amber */
+    }
+
+    .symbol-info {
+        color: #3b82f6;
+        /* Blue */
+    }
+
+    .symbol-star,
+    .symbol-gold-star {
+        color: #FFD700;
+        /* Gold */
+    }
+
+    .symbol-silver-star {
+        color: #C0C0C0;
+        /* Silver */
+    }
+
+    .symbol-bronze-star {
+        color: #CD7F32;
+        /* Bronze */
+    }
+
+    .symbol-arrow-up,
+    .symbol-arrow-right,
+    .symbol-arrow-down,
+    .symbol-arrow-left,
+    .symbol-arrow-ne,
+    .symbol-arrow-se,
+    .symbol-arrow-sw,
+    .symbol-arrow-nw,
+    .symbol-lock,
+    .symbol-search,
+    .symbol-settings {
+        color: #6b7280;
+        /* Gray */
+    }
+</style>

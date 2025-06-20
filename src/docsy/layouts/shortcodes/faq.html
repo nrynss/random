@@ -1,0 +1,13 @@
+{{ $summary := .Get 0 | markdownify }}
+{{ $content := .Inner | markdownify }}
+{{ $id := printf "faq-%s" (md5 $summary) }}
+
+<details class="faq-item shadow-sm rounded mb-3" id="{{ $id }}">
+    <summary class="faq-question p-3 d-flex align-items-center">
+        <span class="faq-icon me-2"></span>
+        <span class="faq-title">{{ $summary }}</span>
+    </summary>
+    <div class="faq-answer p-3">
+        {{ $content }}
+    </div>
+</details>

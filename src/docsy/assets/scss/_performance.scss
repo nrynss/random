@@ -1,0 +1,166 @@
+// Performance and accessibility optimizations for Endor Labs documentation site
+
+// Core layout optimizations
+.td-main {
+    contain: layout style paint;
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+.td-sidebar {
+    contain: layout style;
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+// Search and content optimizations
+.td-offline-search-results {
+    contain: content;
+    will-change: transform;
+    transform: translateZ(0);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+// Image and animation optimizations
+.img-lazy {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+
+    &.loaded {
+        opacity: 1;
+    }
+}
+
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+
+    &.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Typography and accessibility
+body {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.navbar {
+    .nav-link {
+        color: rgba(255, 255, 255, 0.9) !important;
+
+        &:hover {
+            color: #ffffff !important;
+        }
+    }
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+// Common performance optimizations for interactive elements
+%performance-base {
+    contain: content;
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+%strict-performance {
+    contain: strict;
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+// Apply performance optimizations to components
+.table-responsive,
+pre,
+.card,
+.list-group,
+.form-control,
+.btn,
+.alert,
+.badge,
+.progress,
+.spinner-border,
+.spinner-grow,
+.collapse,
+.accordion,
+.tab-content,
+.pagination,
+.breadcrumb,
+.card-deck,
+.card-group,
+.card-columns,
+.jumbotron,
+.media,
+.figure,
+.embed-responsive,
+.close {
+    @extend %performance-base;
+}
+
+// Apply strict performance optimizations
+.modal,
+.dropdown-menu,
+.tooltip,
+.popover,
+.toast,
+.carousel {
+    @extend %strict-performance;
+}
+
+// Typography element optimizations
+code,
+kbd,
+pre,
+samp,
+var,
+mark,
+small,
+strong,
+em,
+abbr,
+dfn,
+cite,
+q,
+blockquote {
+    @extend %performance-base;
+}
+
+// List and definition optimizations
+dl,
+dt,
+dd,
+address,
+hr {
+    @extend %performance-base;
+}
+
+// Table optimizations
+table,
+thead,
+tbody,
+tfoot,
+tr,
+th,
+td,
+caption,
+colgroup,
+col {
+    @extend %performance-base;
+}

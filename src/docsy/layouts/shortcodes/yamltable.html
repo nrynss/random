@@ -1,0 +1,64 @@
+{{ $rawYaml := .Inner }}
+
+{{/* Parse YAML manually */}}
+{{ $entries := slice }}
+{{ $orderedKeys := slice }}
+{{ $seenKeys := dict }}
+{{ $currentEntry := dict }}
+{{ $lines := split $rawYaml "\n" }}
+{{ $inEntry := false }}
+
+{{/* Process each line */}}
+{{ range $lines }}
+  {{ $line := trim . " " }}
+  {{ if hasPrefix $line "- " }}
+    {{/* Save previous entry if exists */}}
+    {{ if $inEntry }}
+      {{ $entries = $entries | append $currentEntry }}
+    {{ end }}
+    {{/* Start new entry */}}
+    {{ $currentEntry = dict }}
+    {{ $inEntry = true }}
+    {{ $keyLine := trim (strings.TrimPrefix "-" $line) " " }}
+    {{ if $keyLine }}
+      {{ $matches := findRE "([A-Za-z][A-Za-z0-9_()/#-]+):\\s*(.+)" $keyLine 1 }}
+      {{ if $matches }}
+        {{ $key := index (findRE "([A-Za-z][A-Za-z0-9_()/#-]+):" (index $matches 0) 1) 0 | strings.TrimSuffix ":" }}
+        {{ $value := trim (strings.TrimPrefix (printf "%s:" $key) $keyLine) " " }}
+        {{ if not (index $seenKeys $key) }}
+          {{ $orderedKeys = $orderedKeys | append $key }}
+          {{ $seenKeys = merge $seenKeys (dict $key true) }}
+        {{ end }}
+        {{ $currentEntry = merge $currentEntry (dict $key $value) }}
+      {{ end }}
+    {{ end }}
+  {{ else if and $inEntry (ne $line "") }}
+    {{ $matches := findRE "([A-Za-z][A-Za-z0-9_()/#-]+):\\s*(.+)" $line 1 }}
+    {{ if $matches }}
+      {{ $key := index (findRE "([A-Za-z][A-Za-z0-9_()/#-]+):" (index $matches 0) 1) 0 | strings.TrimSuffix ":" }}
+      {{ $value := trim (strings.TrimPrefix (printf "%s:" $key) $line) " " }}
+      {{ if not (index $seenKeys $key) }}
+        {{ $orderedKeys = $orderedKeys | append $key }}
+        {{ $seenKeys = merge $seenKeys (dict $key true) }}
+      {{ end }}
+      {{ $currentEntry = merge $currentEntry (dict $key $value) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ if $inEntry }}
+  {{ $entries = $entries | append $currentEntry }}
+{{ end }}
+
+
+
+{{/* Generate table */}}
+| {{ range $orderedKeys }}{{ . | replaceRE "_" " " }} | {{ end }}
+|{{ range $orderedKeys }}:------------|{{ end }}
+{{- range $entry := $entries }}
+| {{ range $key := $orderedKeys }}
+{{- $value := index $entry $key | default "" }}
+{{- if eq $value "-yes-" }}<span style="color: #2E7D32; display: block; text-align: center" role="img" aria-label="Feature fully supported" title="Feature fully supported">✓</span>
+{{- else if eq $value "-no-" }}<span style="color: #C62828; display: block; text-align: center" role="img" aria-label="Feature not supported" title="Feature not supported">✗</span>
+{{- else if eq $value "-limited-" }}<span style="color: #E65100; display: block; text-align: center" role="img" aria-label="Feature partially supported" title="Feature partially supported">◐</span>
+{{- else }}{{ $value | replaceRE "\\-note\\-" "<span style=\"color: #388E3C; font-weight: bold; margin: 0 2px\" role=\"img\" aria-label=\"Note\" title=\"Note\">📝</span>" | replaceRE "\\-warning\\-" "<span style=\"color: #E65100; font-weight: bold; margin: 0 2px\" role=\"img\" aria-label=\"Warning\" title=\"Warning\">🛑</span>" | replaceRE "\\-tip\\-" "<span style=\"color: #1976D2; font-weight: bold; margin: 0 2px\" role=\"img\" aria-label=\"Tip\" title=\"Tip\">🧭</span>" | safeHTML }}{{- end }} | {{ end }}
+{{- end }}

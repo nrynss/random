@@ -1,0 +1,59 @@
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=GT-577M6TMD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'GT-577M6TMD');
+</script>
+<script src="https://unpkg.com/@inkeep/widgets-embed@0.2.278/dist/embed.js" type="module" defer
+	id="inkeep-script"></script>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		// Store Prism if it exists
+		const originalPrism = window.Prism;
+
+		const inkeepConfiguration = {
+			baseSettings: {
+				apiKey: "",
+				integrationId: "{{ .Site.Params.inkeep_integration_id }}",
+				organizationId: "{{ .Site.Params.inkeep_organization_id }}",
+				primaryBrandColor: "#04F079",
+				chatApiProxyDomain: window.location.host + "{{ .Site.Params.inkeep_proxy_path }}",
+			},
+			aiChatSettings: {
+				chatSubjectName: "Endor Labs",
+				botAvatarSrcUrl:
+					"https://storage.googleapis.com/organization-image-assets/endorlabs-botAvatarSrcUrl-1707802124667.svg",
+				botAvatarDarkSrcUrl:
+					"https://storage.googleapis.com/organization-image-assets/endorlabs-botAvatarDarkSrcUrl-1707802124222.svg",
+				getHelpCallToActions: [
+					{
+						name: "Request a Demo",
+						url: "https://www.endorlabs.com/pages/request-a-demo",
+						icon: {
+							builtIn: "IoChatbubblesOutline",
+						},
+					},
+				],
+				quickQuestions: [
+					"Can I incorporate Endor Labs into my CI/CD pipeline?",
+					"How does Endor Labs determine whether a dependency is risky?",
+					"What is Endor Labs' reachability analysis?",
+				],
+			},
+		};
+
+		// "Ask AI" chat button
+		const inkeepWidget = Inkeep().embed({
+			componentType: "ChatButton",
+			properties: inkeepConfiguration,
+		});
+
+		// Restore Prism if it was previously defined
+		if (originalPrism) {
+			window.Prism = originalPrism;
+		}
+	});
+</script>

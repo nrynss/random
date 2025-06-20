@@ -1,0 +1,20 @@
+- Operator: `==`
+  Description: Matches objects where a specified field is equal to a specified value.
+- Operator: `!=`
+  Description: Matches objects where a specified field is NOT equal to a specified value.
+- Operator: `<`
+  Description: Matches objects where a specified field is less than a specified value.
+- Operator: `<=`
+  Description: Matches objects where a specified field is less than or equal to a specified value.
+- Operator: `>`
+  Description: Matches objects where a specified field is greater than a specified value.
+- Operator: `>=`
+  Description: Matches objects where a specified field is greater than or equal to a specified value.
+- Operator: `contains`
+  Description: Matches objects where a specified list contains one or more specified values.
+- Operator: `in`
+  Description: Matches objects where a specified field is equal to one ore more specified values.
+- Operator: `matches`
+  Description: Matches objects where a specified field matches a specified regex pattern.
+- Operator: `exists`
+  Description: Matches objects where a specified field in a json payload exists.

@@ -1,0 +1,5 @@
+apis:
+  external@latest:
+    root: ../../../spec/internal/openapi/openapiv2.swagger.domain.json
+    decorators:
+      remove-x-internal: on

@@ -1,0 +1,376 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Endor Labs REST API Reference</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Endor Labs REST API Documentation" />
+    <link rel="shortcut icon" type="image/x-icon" href="/../favicons/favicon.ico" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        .td-navbar {
+            background: #005652;
+            min-height: 4rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1030;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            color: #fff;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-logo img {
+            height: 30px;
+            margin-right: 0.5rem;
+        }
+
+        .api-docs-btn {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 4px 10px;
+            font-size: 14px;
+            border-radius: 4px;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .api-docs-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* API title override */
+        .api-title-override {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .redoc-container {
+            margin-top: 4rem;
+            height: calc(100vh - 4rem);
+            overflow: auto;
+        }
+
+        [data-section-id^="tag/"]>div>div>h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            background-color: #a5d6a7;
+            padding: 8px 10px;
+            margin-bottom: 0;
+            border-radius: 4px;
+        }
+
+        [data-section-id^="tag/"][data-section-id*="/operation/"]>div>div>h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #444;
+            background-color: #e8f5e9;
+            margin: 3px 0;
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+
+        [data-section-id^="tag/"][data-section-id*="/operation/"] {
+            margin-left: 15px;
+            margin-top: 3px;
+            padding-left: 15px;
+        }
+
+        /* Remove any bottom borders that might create underlines */
+        [data-section-id^="tag/"]>div,
+        [data-section-id^="tag/"][data-section-id*="/operation/"]>div {
+            border-bottom: none !important;
+        }
+
+        [data-section-id^="tag/"][data-section-id*="/operation/"]>div>div {
+            padding-left: 0;
+        }
+
+        /* Hide original title */
+        h1[class^="sc-"]:first-of-type {
+            display: none;
+        }
+
+        .download-container {
+            margin: 1rem 0;
+            padding: 10px 20px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+
+        .download-container a {
+            display: inline-block;
+            padding: 6px 12px;
+            background-color: #fff;
+            color: #005652;
+            border: 1px solid #005652;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .download-container a:hover {
+            background-color: #005652;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        [class*="http-verb"] {
+            padding: 2px 8px !important;
+            border-radius: 4px !important;
+            font-weight: bold !important;
+        }
+
+        /* HTTP method badges */
+        .method-badge {
+            padding: 2px 8px !important;
+            border-radius: 4px !important;
+            font-weight: bold !important;
+            color: white !important;
+            margin-left: 10px;
+            font-size: 0.8em;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .post,
+        .method-badge-post {
+            background-color: #49cc90 !important;
+        }
+
+        .get,
+        .method-badge-get {
+            background-color: #61affe !important;
+        }
+
+        .delete,
+        .method-badge-delete {
+            background-color: #f93e3e !important;
+        }
+
+        .put,
+        .method-badge-put {
+            background-color: #fca130 !important;
+        }
+
+        .patch,
+        .method-badge-patch {
+            background-color: #fca130 !important;
+        }
+
+        .list,
+        .method-badge-list {
+            background-color: #61affe !important;
+        }
+
+        .heading-with-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        [role="navigation"] *,
+        [data-section-id] * {
+            border-bottom: none !important;
+        }
+
+        [data-section-id^="tag/"][data-section-id*="/operation/"]>div>div>*:not(h2) {
+            padding-left: 10px;
+        }
+
+        table[class*="sc-"] {
+            margin: 10px 0 !important;
+            border-collapse: collapse !important;
+        }
+
+        table[class*="sc-"] tbody tr td {
+            padding: 8px !important;
+            border-bottom: 1px solid #e0e0e0 !important;
+            vertical-align: top !important;
+        }
+    </style>
+
+    <!-- ReDoc head -->
+    {{{redocHead}}}
+</head>
+
+<body>
+    <header>
+        <nav class="td-navbar navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <span class="navbar-logo">
+                        <img src="/images/api_logo.svg" alt="Endor Labs Logo" height="30" />
+                    </span>
+                    <span>Endor Labs</span>
+                </a>
+                <a href="/rest-api" class="api-docs-btn">API Docs</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="redoc-container">
+        <div class="api-title-override">
+            <span>Endor Labs REST API Reference</span>
+        </div>
+        <div id="redoc-content">
+            {{{redocHTML}}}
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                // Remove any underlines or borders that might appear after sections
+                const allSections = document.querySelectorAll('[data-section-id^="tag/"], [data-section-id^="tag/"][data-section-id*="/operation/"]');
+                allSections.forEach(function (section) {
+                    const elements = section.querySelectorAll('*');
+                    elements.forEach(function (el) {
+                        el.style.borderBottom = 'none';
+                    });
+                    section.style.borderBottom = 'none';
+                });
+
+                const serviceHeadings = document.querySelectorAll('[data-section-id^="tag/"] > div > div > h2');
+                serviceHeadings.forEach(function (heading) {
+                    if (!heading.parentElement.parentElement.parentElement.getAttribute('data-section-id').includes('/operation/')) {
+                        heading.style.fontSize = '24px';
+                        heading.style.fontWeight = '700';
+                        heading.style.padding = '8px 10px';
+                        heading.style.borderRadius = '4px';
+                        heading.style.borderBottom = 'none';
+                    }
+                });
+
+                // Enhance operation headings with method badges
+                const operationSections = document.querySelectorAll('[data-section-id^="tag/"][data-section-id*="/operation/"]');
+                operationSections.forEach(function (section) {
+                    const sectionId = section.getAttribute('data-section-id');
+                    const heading = section.querySelector('div > div > h2');
+
+                    if (heading) {
+                        let method = '';
+                        const methodRegex = /(GET|POST|PUT|DELETE|PATCH|LIST)/i;
+                        const headingText = heading.textContent.trim();
+                        const methodMatch = headingText.match(methodRegex);
+
+                        if (methodMatch) {
+                            method = methodMatch[1].toLowerCase();
+                        } else {
+                            const operationIdMatch = sectionId.match(/\/operation\/(\w+)/);
+                            if (operationIdMatch) {
+                                const operationId = operationIdMatch[1].toLowerCase();
+                                if (operationId.startsWith('get')) method = 'get';
+                                else if (operationId.startsWith('post')) method = 'post';
+                                else if (operationId.startsWith('put')) method = 'put';
+                                else if (operationId.startsWith('delete')) method = 'delete';
+                                else if (operationId.startsWith('patch')) method = 'patch';
+                                else if (operationId.startsWith('list')) method = 'list';
+                            }
+                        }
+
+                        if (method) {
+                            const container = document.createElement('div');
+                            container.className = 'heading-with-badge';
+                            const headingContent = heading.textContent;
+                            heading.textContent = '';
+                            const textSpan = document.createElement('span');
+                            textSpan.textContent = headingContent;
+                            const badge = document.createElement('span');
+                            badge.className = `method-badge method-badge-${method}`;
+                            badge.textContent = method.toUpperCase();
+                            container.appendChild(textSpan);
+                            container.appendChild(badge);
+                            heading.appendChild(container);
+                        }
+                    }
+                });
+
+                const httpVerbElements = document.querySelectorAll('[class*="http-verb"]');
+                httpVerbElements.forEach(function (verbElement) {
+                    const method = verbElement.textContent.trim().toLowerCase();
+                    const operationSection = verbElement.closest('[data-section-id^="tag/"][data-section-id*="/operation/"]');
+
+                    if (operationSection) {
+                        const heading = operationSection.querySelector('div > div > h2');
+                        if (heading && !heading.querySelector('.method-badge')) {
+                            const container = document.createElement('div');
+                            container.className = 'heading-with-badge';
+                            const headingContent = heading.textContent;
+                            heading.textContent = '';
+                            const textSpan = document.createElement('span');
+                            textSpan.textContent = headingContent;
+                            const badge = document.createElement('span');
+                            badge.className = `method-badge method-badge-${method}`;
+                            badge.textContent = method.toUpperCase();
+                            container.appendChild(textSpan);
+                            container.appendChild(badge);
+                            heading.appendChild(container);
+                        }
+                    }
+                });
+
+                const downloadLinks = document.querySelectorAll('a[download], a[href$=".json"]');
+                downloadLinks.forEach(function (link) {
+                    if (!link.closest('.navbar-brand')) { // Don't style links in the navbar
+                        link.style.display = 'inline-block';
+                        link.style.padding = '6px 12px';
+                        link.style.backgroundColor = '#fff';
+                        link.style.color = '#005652';
+                        link.style.border = '1px solid #005652';
+                        link.style.borderRadius = '4px';
+                        link.style.textDecoration = 'none';
+                        link.style.fontWeight = '500';
+                        link.style.transition = 'all 0.2s ease';
+                        link.addEventListener('mouseenter', function () {
+                            this.style.backgroundColor = '#005652';
+                            this.style.color = '#fff';
+                        });
+
+                        link.addEventListener('mouseleave', function () {
+                            this.style.backgroundColor = '#fff';
+                            this.style.color = '#005652';
+                        });
+                    }
+                });
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+{{ $sections := where .Site.Pages "Section" "releasenotes" }}
+{{ $months := where $sections "Kind" "section" }}
+{{ $sortedMonths := sort $months "Date" "desc" }}
+{{ $recentMonths := first 7 $sortedMonths }}
+
+<div class="release-notes">
+    {{ range $index, $month := $recentMonths }}
+    {{ if ne $month.Title "Release notes" }}
+    <div class="release-month{{ if eq $index 0 }} active{{ end }} mb-4">
+        <div class="month-header d-flex justify-content-between align-items-center p-3 rounded shadow-sm"
+             data-bs-toggle="collapse"
+             data-bs-target="#month-{{ $month.Title | urlize }}"
+             role="button"
+             aria-expanded="{{ if eq $index 0 }}true{{ else }}false{{ end }}">
+            <div class="title-link">
+                <a href="{{ $month.RelPermalink }}" class="month-link text-decoration-none" onclick="event.stopPropagation()">{{ $month.Title }}</a>
+            </div>
+            <div class="toggle-icon-wrapper">
+                <i class="fas fa-chevron-{{ if eq $index 0 }}up{{ else }}down{{ end }} toggle-icon"></i>
+            </div>
+        </div>
+        <div class="month-content collapse{{ if eq $index 0 }} show{{ end }}" id="month-{{ $month.Title | urlize }}">
+            <div class="p-3">
+                {{ $month.Content }}
+            </div>
+        </div>
+    </div>
+    {{ end }}
+    {{ end }}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const monthHeaders = document.querySelectorAll('.month-header');
+    monthHeaders.forEach(header => {
+        header.addEventListener('click', function() {
+            const icon = this.querySelector('.toggle-icon');
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+            // Update icon
+            icon.classList.remove(isExpanded ? 'fa-chevron-up' : 'fa-chevron-down');
+            icon.classList.add(isExpanded ? 'fa-chevron-down' : 'fa-chevron-up');
+
+            // Update aria-expanded
+            this.setAttribute('aria-expanded', !isExpanded);
+        });
+    });
+});
+</script>

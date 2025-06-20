@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="{{ .Site.Language.Lang }}" class="no-js">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <!-- Resource hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="/assets/css/main.css" as="style">
+    <link rel="preload" href="/assets/js/main.js" as="script">
+
+    <!-- Critical CSS -->
+    <style>
+        /* Add critical CSS here */
+        body { margin: 0; }
+        .td-main { padding-top: 4rem; }
+        .navbar { position: fixed; top: 0; width: 100%; z-index: 1000; }
+    </style>
+
+    <!-- Deferred CSS loading -->
+    <link rel="stylesheet" href="/assets/css/main.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="/assets/css/main.css"></noscript>
+
+    {{ partial "head.html" . }}
+    <script src="{{ `/js/resize-navbar.js` | relURL }}" defer></script>
+    {{ partial "google-analytics.html" . }}
+</head>
+
+<body class="td-{{ .Kind }}{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
+    <header>{{ partial "navbar.html" . }}</header>
+    <div class="container-fluid td-outer">
+        <div class="td-main">
+            <div class="row flex-xl-nowrap">
+                <aside class="col-12 col-md-2 col-xl-2 td-sidebar d-print-none" id="sidebar-nav">
+                    {{ partial "sidebar.html" . }}
+
+                </aside>
+                <div id="resizeable"></div>
+                <aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
+                    {{ partial "page-meta-links.html" . }} {{ partial
+                    "toc.html" . }} {{ partial "taxonomy_terms_clouds.html"
+                    . }}
+                </aside>
+                <main class="col-12 col-md-9 col-xl-8 ps-md-5" id="main-content" role="main">
+                    {{ partial "version-banner.html" . }} {{ if not
+                    .Site.Params.ui.breadcrumb_disable }}{{ partial
+                    "breadcrumb.html" . }}{{ end }} {{ block "main" . }}{{
+                    end }}
+                </main>
+            </div>
+        </div>
+        {{ partial "footer.html" . }}
+    </div>
+
+    <!-- Deferred JavaScript loading -->
+    <script src="/assets/js/main.js" defer></script>
+    <script src="/assets/js/performance.js" defer></script>
+    {{ partial "scripts.html" . }}
+    <script src="{{ `/js/print-url-fix.js` | relURL }}" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('show') === 'hidden') {
+                document.querySelectorAll('.hidden-content').forEach(el => {
+                    el.style.display = 'block';
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

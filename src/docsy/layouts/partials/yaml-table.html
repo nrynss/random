@@ -1,0 +1,65 @@
+{{/*
+   This partial processes YAML input and generates a markdown table.
+   It uses the same logic as the original yamltable shortcode in src/hugo/docsy/layouts/shortcodes/yamltable.html.
+*/}}
+
+{{/* Parse YAML input */}}
+{{ $rawYaml := . }}
+{{ $entries := slice }}
+{{ $orderedKeys := slice }}
+{{ $seenKeys := dict }}
+{{ $currentEntry := dict }}
+{{ $lines := split $rawYaml "\n" }}
+{{ $inEntry := false }}
+
+{{/* Process each line */}}
+{{ range $lines }}
+  {{ $line := trim . " " }}
+  {{ if hasPrefix $line "- " }}
+    {{/* Save previous entry if exists */}}
+    {{ if $inEntry }}
+      {{ $entries = $entries | append $currentEntry }}
+    {{ end }}
+    {{/* Start new entry */}}
+    {{ $currentEntry = dict }}
+    {{ $inEntry = true }}
+    {{ $keyLine := trim (strings.TrimPrefix "-" $line) " " }}
+    {{ if $keyLine }}
+      {{ $matches := findRE "([A-Za-z][A-Za-z0-9_()/#-]+):\\s*(.+)" $keyLine 1 }}
+      {{ if $matches }}
+        {{ $key := index (findRE "([A-Za-z][A-Za-z0-9_()/#-]+):" (index $matches 0) 1) 0 | strings.TrimSuffix ":" }}
+        {{ $value := trim (strings.TrimPrefix (printf "%s:" $key) $keyLine) " " }}
+        {{ if not (index $seenKeys $key) }}
+          {{ $orderedKeys = $orderedKeys | append $key }}
+          {{ $seenKeys = merge $seenKeys (dict $key true) }}
+        {{ end }}
+        {{ $currentEntry = merge $currentEntry (dict $key $value) }}
+      {{ end }}
+    {{ end }}
+  {{ else if and $inEntry (ne $line "") }}
+    {{ $matches := findRE "([A-Za-z][A-Za-z0-9_()/#-]+):\\s*(.+)" $line 1 }}
+    {{ if $matches }}
+      {{ $key := index (findRE "([A-Za-z][A-Za-z0-9_()/#-]+):" (index $matches 0) 1) 0 | strings.TrimSuffix ":" }}
+      {{ $value := trim (strings.TrimPrefix (printf "%s:" $key) $line) " " }}
+      {{ if not (index $seenKeys $key) }}
+        {{ $orderedKeys = $orderedKeys | append $key }}
+        {{ $seenKeys = merge $seenKeys (dict $key true) }}
+      {{ end }}
+      {{ $currentEntry = merge $currentEntry (dict $key $value) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ if $inEntry }}
+  {{ $entries = $entries | append $currentEntry }}
+{{ end }}
+
+{{/* Generate table */}}
+| {{ range $orderedKeys }}{{ . | replaceRE "_" " " }} | {{ end }}
+|{{ range $orderedKeys }}:------------|{{ end }}
+{{- range $entry := $entries }}
+| {{ range $key := $orderedKeys }}
+{{- $value := index $entry $key | default "" }}
+{{- if eq $value "-yes-" }}<span style="color: green; display: block; text-align: center" role="img" aria-label="Supported" title="Supported">✓</span>
+{{- else if eq $value "-no-" }}<span style="color: red; display: block; text-align: center" role="img" aria-label="Unsupported" title="Unsupported">✗</span>
+{{- else }}{{ $value | safeHTML }}{{- end }} | {{ end }}
+{{- end }}
