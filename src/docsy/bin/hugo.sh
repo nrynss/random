@@ -109,6 +109,8 @@ require (
     github.com/google/docsy/dependencies v0.7.2 // indirect
 )
 EOF
+
+    go mod tidy
 }
 
 clean_mod() {

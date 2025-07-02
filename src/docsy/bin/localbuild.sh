@@ -118,7 +118,7 @@ EOF
         cd "$DOCSY_DIR" && \
         npx @redocly/cli bundle external@latest --output spec.json --config "$TEMP_CONFIG" && \
         npx @redocly/cli build-docs spec.json \
-            --output content/en/api/index.html \
+            --output static/api/index.html \
             --template "assets/redoc-assets/template.hbs"
 
         # Clean up ALL temporary files
